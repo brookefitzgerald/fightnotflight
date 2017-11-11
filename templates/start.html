@@ -1,0 +1,15 @@
+{% extends "index.html" %}
+{% block body %}
+
+    <div class='container'>
+        <h1>Which game do you want to play?</h1>
+        <form action = "." method = "POST">
+        <div class="form-group">
+            <input type="text" class="form-control" id="gameid" placeholder="Game ID">
+            <input type="text" class="form-control" id="username" placeholder="Username">
+        </div>
+        <input type="submit" class="btn btn-success" value="Enter Game">
+        </form>
+    </div>
+
+{% endblock body %}
