@@ -1,1 +1,207 @@
-{% extends "index.html" %}
+<html>
+    <head>
+        <title>JavaScript Sprite Animation Tutorial</title>
+    </head>
+    <body>
+        <canvas id="canvas"></canvas>
+    </body>
+    <script type=text/javascript>
+        var w = window.innerWidth;
+        var h = window.innerHeight;
+
+        var lEnd = w*0.1
+        var rEnd = w*0.9
+
+        var score=0;
+        var maxScore=100;
+        var pixelsPerPoint = ((w/2)-lEnd)/maxScore;
+
+        var rx=rEnd;
+        var ry=h/2;
+
+        var lx=lEnd;
+        var ly=h/2;
+
+        var curLeftPenguinFrame = 0;
+        var curRightPenguinFrame = 0;
+        var rPunchCounter = 0;
+        var lPunchCounter = 0;
+        var framePunchCount = 5;
+        var frameStandCount = 8;
+        var frameDeathCount = 13;
+        var frameBgCount = 10;
+
+        var totalStandWidth = 2400;
+        var totalPunchWidth = 1500;
+        var height = 330;
+        var width = 300;
+
+        var totalDeathWidth = 9240;
+        var deathHeight = 840;
+        var deathWidth = totalDeathWidth/frameDeathCount;
+
+        var srcRX;
+        var srcRY=0;
+
+        var srcLX;
+        var srcLY=0;
+
+        var totalBgWidth = 1500;
+        var bgHeight = 530;
+
+        var curBgFrame = 0;
+        var frameBgCount = 5;
+
+        var bgWidth = totalBgWidth/frameBgCount;
+
+        var srcBgX;
+        var srcBgY=0;
+
+        var speed = 1;
+
+        var canvas = document.getElementById('canvas');
+        canvas.width = w;
+        canvas.height = h;
+
+        var ctx = canvas.getContext("2d");
+
+        var background = new Image();
+        background.src = "static/background.png";
+
+        var leftfrazzledpunch = new Image();
+        leftfrazzledpunch.src = "static/leftfrazzledpunch.png";
+
+        var rightfrazzledpunch = new Image();
+        rightfrazzledpunch.src = "static/rightfrazzledpunch.png";
+
+        var leftfrazzledstand = new Image();
+        leftfrazzledstand.src = "static/leftfrazzledstand.png";
+
+        var rightfrazzledstand = new Image();
+        rightfrazzledstand.src = "static/rightfrazzledstand.png";
+
+        var leftstand = new Image();
+        leftstand.src = "static/leftstand.png";
+
+        var rightstand = new Image();
+        rightstand.src = "static/rightstand.png";
+
+        var leftpunch = new Image();
+        leftpunch.src = "static/leftpunch.png";
+
+        var rightpunch = new Image();
+        rightpunch.src = "static/rightpunch.png";
+
+        var left = leftstand;
+        var right = rightstand;
+
+        var rightDeath = false;
+        var leftDeath= false;
+
+        var lPunch = false;
+        var rPunch = false;
+
+        function updateFrame(){
+
+            //if rightDeath:
+            //    src
+
+            if (score>0.9*maxScore){
+                if (score==0.9*maxScore){
+                    curRightPenguinFrame = 0;
+                }
+                if (rPunch){
+                    right = rightfrazzledpunch;
+                    curRightPenguinFrame = ++curRightPenguinFrame % framePunchCount;
+                } else {
+                    right = rightfrazzledstand;
+                    curRightPenguinFrame = ++curRightPenguinFrame % frameStandCount;
+                }
+            }
+            if (score<-0.9*maxScore){
+                if (score==-0.9*maxScore){
+                    curLeftPenguinFrame=0;
+                }
+                if (lPunch){
+                    left = leftfrazzledpunch;
+                    curLeftPenguinFrame = ++curLeftPenguinFrame % framePunchCount;
+                } else {
+                    left = leftfrazzledstand;
+                    curLeftPenguinFrame = ++curLeftPenguinFrame % frameStandCount;
+                }
+            }
+            if (Math.abs(score)<maxScore){
+                if (rPunch){
+                    right = rightpunch;
+                    curRightPenguinFrame = ++curRightPenguinFrame % framePunchCount;
+                } else {
+                    right = rightstand;
+                    curRightPenguinFrame = ++curRightPenguinFrame % frameStandCount;
+                }
+                if (lPunch){
+                    left = leftpunch;
+                    curLeftPenguinFrame = ++curLeftPenguinFrame % framePunchCount;
+
+                } else {
+                    left = leftstand;
+                    curLeftPenguinFrame = ++curLeftPenguinFrame % frameStandCount;
+                }
+
+            }
+            srcRX = curRightPenguinFrame * width;
+            srcLX = curLeftPenguinFrame * width;
+
+            curBgFrame = ++curBgFrame % frameBgCount;
+            srcBgX = curBgFrame*bgWidth;
+            ctx.drawImage(background,srcBgX,srcBgY,bgWidth, bgHeight, 0,0,w,h);
+
+        }
+
+        function draw(){
+            if (score>=100){
+                rightDeath=true;
+                updateFrame();
+            } else if (score<=-100) {
+                leftDeath=true;
+                updateFrame();
+            } else {
+                if (lPunch && rPunch){                     // when both punches are registered
+                    if (rPunchCounter==0 && lPunchCounter<framePenguinCount){
+                        rPunch = false;
+                        lPunchCounter = lPunchCounter + 1;
+                    }
+                    else if (lPunchCounter==0 && rPunchCounter<framePenguinCount){
+                        lPunch = false;
+                        rPunchCounter = rPunchCounter + 1;
+                    }
+                } else if (rPunch){
+                    if (rPunchCounter==0){
+                        score = score - rPunchSpeed;
+                    }
+                    rPunchCounter = rPunchCounter+1;
+                } else if (lPunch){
+                    if (lPunchCounter==0){
+                        score = score +lPunchSpeed;
+                    }
+                    lPunchCounter = lPunchCounter+1;
+                }
+                updateFrame();
+                ctx.drawImage(left,srcLX,srcLY,width,height,lx,ly,width,height);
+                ctx.drawImage(right,srcRX,srcRY,width,height,rx,ry,width,height);
+
+                if (rPunchCounter==framePenguinCount){
+                    rPunch=False;
+                    rPunchCounter = 0;
+                }
+                if (lPunchCounter==framePenguinCount){
+                    lPunch=False;
+                    lPunchCounter=0;
+                }
+            }
+
+        }
+        window.onload=function(){
+            setInterval(draw,100);
+        }
+    </script>
+</html>

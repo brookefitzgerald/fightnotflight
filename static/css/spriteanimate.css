@@ -1,0 +1,18 @@
+body {
+      padding: 30px;
+    }
+
+#spriteContainer {
+  width: 1500px;
+  height: 530px;
+  display: block;
+  background-image: url("images/frazzledpenguin.png");
+  animation: sprite .3s steps(24) infinite;
+}
+
+@keyframes sprite {
+     100% {
+       background-position: -1500px;
+     }
+}
+
